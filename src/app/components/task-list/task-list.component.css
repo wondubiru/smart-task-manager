@@ -1,0 +1,68 @@
+.container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    font-family: Arial, sans-serif;
+  }
+  
+  h1 {
+    text-align: center;
+    color: #2c3e50;
+  }
+  
+  .add-task {
+    text-align: center;
+    margin: 1rem 0;
+  }
+  
+  .btn {
+    text-decoration: none;
+    background-color: #3498db;
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+  
+  .btn:hover {
+    background-color: #2980b9;
+  }
+  
+  .tasks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .task-card {
+    background-color: #ecf0f1;
+    border-radius: 8px;
+    padding: 1rem;
+    width: 250px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+  }
+  
+  .task-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .task-card h3 a {
+    text-decoration: none;
+    color: #2c3e50;
+  }
+  
+  .task-card p {
+    margin: 0.3rem 0;
+    font-size: 0.9rem;
+  }
+  
+  .low { color: green; font-weight: bold; }
+  .medium { color: orange; font-weight: bold; }
+  .high { color: red; font-weight: bold; }
+  
+  .pending { color: orange; }
+  .completed { color: green; }
+  

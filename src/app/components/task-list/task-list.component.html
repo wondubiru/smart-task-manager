@@ -1,0 +1,22 @@
+<div class="container">
+    <h1>📝 Smart Task Manager</h1>
+  
+    <div class="add-task">
+      <a routerLink="/add-task" class="btn">+ Add New Task</a>
+    </div>
+  
+    <div class="tasks" *ngIf="tasks.length > 0; else empty">
+      <div class="task-card" *ngFor="let task of tasks">
+        <h3><a [routerLink]="['/tasks', task.id]">{{ task.title }}</a></h3>
+        <p>{{ task.description }}</p>
+        <p>Due: {{ task.dueDate | date:'shortDate' }}</p>
+        <p>Priority: <span [class]="task.priority">{{ task.priority }}</span></p>
+        <p>Status: <span [class]="task.status">{{ task.status }}</span></p>
+      </div>
+    </div>
+  
+    <ng-template #empty>
+      <p>No tasks yet. Click “Add New Task” to get started!</p>
+    </ng-template>
+  </div>
+  
