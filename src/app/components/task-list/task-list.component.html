@@ -1,22 +1,228 @@
 <div class="container">
+  <div class="header-section">
     <h1>📝 Smart Task Manager</h1>
-  
-    <div class="add-task">
-      <a routerLink="/add-task" class="btn">+ Add New Task</a>
+    <div class="header-actions">
+      <a routerLink="/add-task" class="btn btn-primary">
+        <span class="icon">➕</span>
+        Add New Task
+      </a>
+    </div>
+  </div>
+
+  <!-- Search and Filter Controls -->
+  <div class="controls-section">
+    <div class="search-bar">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (input)="onSearch()" 
+        placeholder="🔍 Search tasks, descriptions, or tags..."
+        class="search-input">
+    </div>
+
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="status-filter">Status:</label>
+        <select 
+          id="status-filter" 
+          [(ngModel)]="selectedStatus" 
+          (change)="onFilterChange()"
+          class="filter-select">
+          <option *ngFor="let option of statusOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="priority-filter">Priority:</label>
+        <select 
+          id="priority-filter" 
+          [(ngModel)]="selectedPriority" 
+          (change)="onFilterChange()"
+          class="filter-select">
+          <option *ngFor="let option of priorityOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="category-filter">Category:</label>
+        <select 
+          id="category-filter" 
+          [(ngModel)]="selectedCategory" 
+          (change)="onFilterChange()"
+          class="filter-select">
+          <option *ngFor="let option of categoryOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
     </div>
   
-    <div class="tasks" *ngIf="tasks.length > 0; else empty">
-      <div class="task-card" *ngFor="let task of tasks">
-        <h3><a [routerLink]="['/tasks', task.id]">{{ task.title }}</a></h3>
-        <p>{{ task.description }}</p>
-        <p>Due: {{ task.dueDate | date:'shortDate' }}</p>
-        <p>Priority: <span [class]="task.priority">{{ task.priority }}</span></p>
-        <p>Status: <span [class]="task.status">{{ task.status }}</span></p>
+    <div class="sort-controls">
+      <div class="sort-group">
+        <label for="sort-by">Sort by:</label>
+        <select 
+          id="sort-by" 
+          [(ngModel)]="sortBy" 
+          (change)="onSortChange()"
+          class="sort-select">
+          <option value="dueDate">Due Date</option>
+          <option value="priority">Priority</option>
+          <option value="createdDate">Created Date</option>
+          <option value="title">Title</option>
+        </select>
+        <button 
+          (click)="toggleSortDirection()" 
+          class="sort-direction-btn"
+          [title]="sortAscending ? 'Sort Descending' : 'Sort Ascending'">
+          {{ sortAscending ? '⬆️' : '⬇️' }}
+        </button>
+      </div>
+
+      <button (click)="clearAllFilters()" class="btn btn-secondary clear-filters">
+        🗑️ Clear Filters
+      </button>
+    </div>
+  </div>
+
+  <!-- Task Statistics -->
+  <div class="stats-section" *ngIf="allTasks.length > 0">
+    <div class="stats-card">
+      <span class="stat-label">Total:</span>
+      <span class="stat-value">{{ allTasks.length }}</span>
+    </div>
+    <div class="stats-card">
+      <span class="stat-label">Showing:</span>
+      <span class="stat-value">{{ filteredTasks.length }}</span>
+    </div>
+  </div>
+
+  <!-- Tasks Grid -->
+  <div class="tasks-section">
+    <div class="tasks-grid" *ngIf="filteredTasks.length > 0; else empty">
+      <div 
+        class="task-card" 
+        *ngFor="let task of filteredTasks"
+        [class.overdue]="isOverdue(task)"
+        [class.completed]="task.status === 'completed'">
+        
+        <div class="task-header">
+          <h3>
+            <a [routerLink]="['/tasks', task.id]" class="task-title-link">
+              {{ task.title }}
+            </a>
+          </h3>
+          <div class="task-actions">
+            <button 
+              (click)="toggleTaskStatus(task.id, $event)"
+              class="action-btn toggle-btn"
+              [title]="task.status === 'completed' ? 'Mark as pending' : 'Mark as completed'">
+              {{ task.status === 'completed' ? '↩️' : '✅' }}
+            </button>
+            <a 
+              [routerLink]="['/edit-task', task.id]" 
+              class="action-btn edit-btn"
+              title="Edit task">
+              ✏️
+            </a>
+            <button 
+              (click)="deleteTask(task.id, $event)"
+              class="action-btn delete-btn"
+              title="Delete task">
+              🗑️
+            </button>
+          </div>
+        </div>
+
+        <div class="task-content">
+          <p class="task-description" *ngIf="task.description">
+            {{ task.description }}
+          </p>
+
+          <div class="task-meta">
+            <div class="meta-item">
+              <span class="meta-label">📅 Due:</span>
+              <span class="meta-value" [class.overdue-text]="isOverdue(task)">
+                {{ task.dueDate | date:'MMM d, y' }}
+              </span>
+            </div>
+
+            <div class="meta-item">
+              <span class="meta-label">🏷️ Priority:</span>
+              <span 
+                class="priority-badge" 
+                [style.background-color]="getPriorityColor(task.priority)">
+                {{ task.priority | titlecase }}
+              </span>
+            </div>
+
+            <div class="meta-item">
+              <span class="meta-label">📊 Status:</span>
+              <span 
+                class="status-badge" 
+                [style.background-color]="getStatusColor(task.status)">
+                {{ task.status | titlecase }}
+              </span>
+            </div>
+
+            <div class="meta-item" *ngIf="task.category">
+              <span class="meta-label">📂 Category:</span>
+              <span class="category-badge">{{ task.category | titlecase }}</span>
+            </div>
+          </div>
+
+          <!-- Subtasks Progress -->
+          <div class="subtasks-progress" *ngIf="task.subtasks && task.subtasks.length > 0">
+            <span class="subtasks-label">📋 Subtasks:</span>
+            <div class="progress-bar">
+              <div 
+                class="progress-fill" 
+                [style.width.%]="(getCompletedSubtasksCount(task) / getTotalSubtasksCount(task)) * 100">
+              </div>
+            </div>
+            <span class="progress-text">
+              {{ getCompletedSubtasksCount(task) }}/{{ getTotalSubtasksCount(task) }}
+            </span>
+          </div>
+
+          <!-- Tags -->
+          <div class="task-tags" *ngIf="task.tags && task.tags.length > 0">
+            <span class="tag" *ngFor="let tag of task.tags">#{{ tag }}</span>
+          </div>
+
+          <!-- Time Tracking -->
+          <div class="time-tracking" *ngIf="task.estimatedHours || task.actualHours">
+            <div class="time-item" *ngIf="task.estimatedHours">
+              <span class="time-label">⏱️ Estimated:</span>
+              <span class="time-value">{{ task.estimatedHours }}h</span>
+            </div>
+            <div class="time-item" *ngIf="task.actualHours">
+              <span class="time-label">⏰ Actual:</span>
+              <span class="time-value">{{ task.actualHours }}h</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   
     <ng-template #empty>
-      <p>No tasks yet. Click “Add New Task” to get started!</p>
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h3>No tasks found</h3>
+        <p *ngIf="searchQuery || selectedStatus || selectedPriority || selectedCategory">
+          Try adjusting your search or filters to find more tasks.
+        </p>
+        <p *ngIf="!searchQuery && !selectedStatus && !selectedPriority && !selectedCategory">
+          No tasks yet. Click "Add New Task" to get started!
+        </p>
+        <a routerLink="/add-task" class="btn btn-primary">
+          ➕ Add Your First Task
+        </a>
+      </div>
     </ng-template>
+  </div>
   </div>
   

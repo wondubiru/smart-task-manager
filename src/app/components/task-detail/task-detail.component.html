@@ -1,1 +1,194 @@
-<p>task-detail works!</p>
+<div class="task-detail-container" *ngIf="task; else notFound">
+  <!-- Header Section -->
+  <div class="task-header">
+    <div class="header-left">
+      <h1 class="task-title">{{ task.title }}</h1>
+      <div class="task-badges">
+        <span 
+          class="priority-badge" 
+          [style.background-color]="getPriorityColor(task.priority)">
+          {{ getPriorityIcon(task.priority) }} {{ task.priority | titlecase }}
+        </span>
+        <span 
+          class="status-badge" 
+          [style.background-color]="getStatusColor(task.status)">
+          {{ getStatusIcon(task.status) }} {{ task.status | titlecase }}
+        </span>
+        <span class="category-badge">
+          {{ getCategoryIcon(task.category) }} {{ task.category | titlecase }}
+        </span>
+        <span class="overdue-badge" *ngIf="isOverdue()">
+          ⚠️ Overdue
+        </span>
+      </div>
+    </div>
+    
+    <div class="header-actions">
+      <button 
+        (click)="toggleTaskStatus()" 
+        class="btn btn-primary action-btn">
+        {{ getStatusIcon(task.status) }} Change Status
+      </button>
+      <a 
+        [routerLink]="['/edit-task', task.id]" 
+        class="btn btn-secondary action-btn">
+        ✏️ Edit
+      </a>
+      <button 
+        (click)="deleteTask()" 
+        class="btn btn-danger action-btn">
+        🗑️ Delete
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="task-content">
+    <!-- Description Section -->
+    <div class="content-section" *ngIf="task.description">
+      <h3 class="section-title">📝 Description</h3>
+      <div class="description-content">
+        {{ task.description }}
+      </div>
+    </div>
+
+    <!-- Task Details Grid -->
+    <div class="content-section">
+      <h3 class="section-title">📊 Task Details</h3>
+      <div class="details-grid">
+        <div class="detail-item">
+          <span class="detail-label">📅 Due Date:</span>
+          <span class="detail-value" [class.overdue-text]="isOverdue()">
+            {{ task.dueDate | date:'fullDate' }}
+          </span>
+        </div>
+
+        <div class="detail-item">
+          <span class="detail-label">📍 Created:</span>
+          <span class="detail-value">
+            {{ task.createdDate | date:'fullDate' }}
+          </span>
+        </div>
+
+        <div class="detail-item" *ngIf="task.estimatedHours">
+          <span class="detail-label">⏱️ Estimated:</span>
+          <span class="detail-value">{{ task.estimatedHours }} hours</span>
+        </div>
+
+        <div class="detail-item" *ngIf="task.actualHours">
+          <span class="detail-label">⏰ Actual:</span>
+          <span class="detail-value">{{ task.actualHours }} hours</span>
+        </div>
+
+        <div class="detail-item" *ngIf="task.estimatedHours && task.actualHours">
+          <span class="detail-label">📈 Efficiency:</span>
+          <span class="detail-value" 
+                [class.over-estimate]="task.actualHours > task.estimatedHours"
+                [class.under-estimate]="task.actualHours <= task.estimatedHours">
+            {{ ((task.estimatedHours / task.actualHours) * 100) | number:'1.0-0' }}%
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tags Section -->
+    <div class="content-section" *ngIf="task.tags && task.tags.length > 0">
+      <h3 class="section-title">🏷️ Tags</h3>
+      <div class="tags-container">
+        <span class="tag" *ngFor="let tag of task.tags">#{{ tag }}</span>
+      </div>
+    </div>
+
+    <!-- Subtasks Section -->
+    <div class="content-section">
+      <h3 class="section-title">📋 Subtasks</h3>
+      
+      <!-- Progress Bar -->
+      <div class="progress-section" *ngIf="getTotalSubtasksCount() > 0">
+        <div class="progress-header">
+          <span class="progress-label">Progress:</span>
+          <span class="progress-percentage">{{ getProgressPercentage() }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div 
+            class="progress-fill" 
+            [style.width.%]="getProgressPercentage()">
+          </div>
+        </div>
+        <div class="progress-stats">
+          {{ getCompletedSubtasksCount() }} of {{ getTotalSubtasksCount() }} completed
+        </div>
+      </div>
+
+      <!-- Add New Subtask -->
+      <div class="add-subtask-section">
+        <div class="subtask-input-row">
+          <input 
+            type="text" 
+            [(ngModel)]="newSubtaskTitle"
+            (keyup.enter)="addSubtask()"
+            placeholder="Add a new subtask..."
+            class="subtask-input" />
+          <button 
+            (click)="addSubtask()"
+            [disabled]="!newSubtaskTitle.trim()"
+            class="btn btn-primary add-btn">
+            ➕ Add
+          </button>
+        </div>
+      </div>
+
+      <!-- Subtasks List -->
+      <div class="subtasks-list" *ngIf="task.subtasks && task.subtasks.length > 0; else noSubtasks">
+        <div 
+          class="subtask-item" 
+          *ngFor="let subtask of task.subtasks"
+          [class.completed]="subtask.completed">
+          
+          <div class="subtask-checkbox">
+            <input 
+              type="checkbox" 
+              [id]="'subtask-' + subtask.id"
+              [checked]="subtask.completed"
+              (change)="toggleSubtask(subtask.id)" />
+            <label [for]="'subtask-' + subtask.id" class="checkbox-label"></label>
+          </div>
+
+          <span class="subtask-title" [class.completed]="subtask.completed">
+            {{ subtask.title }}
+          </span>
+
+          <span class="subtask-status">
+            {{ subtask.completed ? '✅' : '⏳' }}
+          </span>
+        </div>
+      </div>
+
+      <ng-template #noSubtasks>
+        <div class="empty-subtasks">
+          <p>No subtasks yet. Add one above to break down this task!</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="navigation-section">
+    <a routerLink="/tasks" class="btn btn-secondary back-btn">
+      ← Back to Tasks
+    </a>
+  </div>
+</div>
+
+<!-- Task Not Found -->
+<ng-template #notFound>
+  <div class="not-found-container">
+    <div class="not-found-content">
+      <h2>📋 Task Not Found</h2>
+      <p>The task you're looking for doesn't exist or may have been deleted.</p>
+      <a routerLink="/tasks" class="btn btn-primary">
+        ← Back to Tasks
+      </a>
+    </div>
+  </div>
+</ng-template>

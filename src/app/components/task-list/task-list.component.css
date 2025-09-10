@@ -1,68 +1,383 @@
-.container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 1rem;
-    font-family: Arial, sans-serif;
+/* Task List Component Styles */
+
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--border-light);
+}
+
+.header-section h1 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.header-actions .btn {
+  font-size: 1rem;
+  padding: var(--spacing-md) var(--spacing-lg);
+}
+
+/* Controls Section */
+.controls-section {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.search-bar {
+  margin-bottom: var(--spacing-lg);
+}
+
+.search-input {
+  padding: var(--spacing-md);
+  font-size: 1rem;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border-light);
+}
+
+.search-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgb(59 130 246 / 0.1);
+}
+
+.filters-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-group label {
+  margin-bottom: var(--spacing-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.filter-select {
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.sort-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.sort-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.sort-group label {
+  margin: 0;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.sort-select {
+  min-width: 150px;
+}
+
+.sort-direction-btn {
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border-medium);
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all var(--transition-fast);
+}
+
+.sort-direction-btn:hover {
+  background-color: var(--bg-tertiary);
+  transform: scale(1.1);
+}
+
+.clear-filters {
+  font-size: 0.875rem;
+}
+
+/* Stats Section */
+.stats-section {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.stats-card {
+  background-color: var(--bg-primary);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.stat-value {
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--primary-color);
+}
+
+/* Tasks Grid */
+.tasks-section {
+  margin-bottom: var(--spacing-xl);
+}
+
+.tasks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.task-card {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-light);
+  position: relative;
+  overflow: hidden;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.task-card.overdue {
+  border-left: 4px solid var(--error-color);
+}
+
+.task-card.completed {
+  opacity: 0.8;
+  background-color: var(--bg-tertiary);
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+}
+
+.task-title-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+.task-title-link:hover {
+  color: var(--primary-color);
+}
+
+.task-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+  margin-left: var(--spacing-md);
+}
+
+.action-btn {
+  padding: var(--spacing-xs);
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  transition: all var(--transition-fast);
+  color: var(--text-secondary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+}
+
+.action-btn:hover {
+  background-color: var(--bg-tertiary);
+  transform: scale(1.1);
+}
+
+.delete-btn:hover {
+  background-color: var(--error-color);
+  color: var(--text-white);
+}
+
+.task-content {
+  margin-bottom: var(--spacing-md);
+}
+
+.task-description {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.5;
+}
+
+.task-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.875rem;
+}
+
+.meta-label {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.meta-value {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.subtasks-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  font-size: 0.875rem;
+}
+
+.subtasks-label {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  margin: 0 var(--spacing-xs);
+}
+
+.progress-text {
+  color: var(--text-secondary);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.task-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.time-tracking {
+  display: flex;
+  gap: var(--spacing-md);
+  font-size: 0.875rem;
+}
+
+.time-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.time-label {
+  color: var(--text-muted);
+}
+
+.time-value {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* Empty State */
+.empty-state {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-2xl);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+.empty-state h3 {
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.empty-state p {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
   }
-  
-  h1 {
-    text-align: center;
-    color: #2c3e50;
+
+  .filters-row {
+    grid-template-columns: 1fr;
   }
-  
-  .add-task {
-    text-align: center;
-    margin: 1rem 0;
+
+  .sort-controls {
+    flex-direction: column;
+    align-items: stretch;
   }
-  
-  .btn {
-    text-decoration: none;
-    background-color: #3498db;
-    color: white;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    font-weight: bold;
-    transition: 0.3s;
+
+  .tasks-grid {
+    grid-template-columns: 1fr;
   }
-  
-  .btn:hover {
-    background-color: #2980b9;
+
+  .task-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
   }
-  
-  .tasks {
-    display: flex;
+
+  .task-actions {
+    align-self: flex-end;
+    margin-left: 0;
+  }
+
+  .task-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-section {
     flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
   }
-  
-  .task-card {
-    background-color: #ecf0f1;
-    border-radius: 8px;
-    padding: 1rem;
-    width: 250px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+}
+
+@media (max-width: 480px) {
+  .controls-section {
+    padding: var(--spacing-md);
   }
-  
-  .task-card:hover {
-    transform: translateY(-5px);
+
+  .action-btn {
+    font-size: 0.875rem;
   }
-  
-  .task-card h3 a {
-    text-decoration: none;
-    color: #2c3e50;
-  }
-  
-  .task-card p {
-    margin: 0.3rem 0;
-    font-size: 0.9rem;
-  }
-  
-  .low { color: green; font-weight: bold; }
-  .medium { color: orange; font-weight: bold; }
-  .high { color: red; font-weight: bold; }
-  
-  .pending { color: orange; }
-  .completed { color: green; }
-  
+}

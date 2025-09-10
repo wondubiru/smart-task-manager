@@ -11,8 +11,10 @@ import { fileURLToPath } from 'node:url';
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
-const app = express();
+// Create the Angular SSR app engine instance
 const angularApp = new AngularNodeAppEngine();
+
+const app = express();
 
 /**
  * Example Express Rest API endpoints can be defined here.
@@ -21,7 +23,7 @@ const angularApp = new AngularNodeAppEngine();
  * Example:
  * ```ts
  * app.get('/api/**', (req, res) => {
- *   // Handle API request
+ * // Handle API request
  * });
  * ```
  */

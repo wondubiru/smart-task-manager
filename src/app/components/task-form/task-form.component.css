@@ -1,89 +1,344 @@
-body {
-    background-color: #f0f2f5;
-    padding: 2rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+/* Task Form Component Styles */
+
+.task-form-container {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.form-container {
-    max-width: 500px;
-    margin: 3rem auto;
-    padding: 2rem;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 2px solid var(--border-light);
 }
 
-h1 {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #2c3e50;
+.form-header h2 {
+  margin: 0;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.task-form {
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.form-section {
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.form-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.section-title {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
 }
 
 .form-group {
-    display: flex;
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  transition: all var(--transition-fast);
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1), var(--shadow-md);
+}
+
+.form-textarea {
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+/* Subtasks Section */
+.subtasks-container {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--border-light);
+}
+
+.subtask-input-row {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.subtask-input {
+  flex: 1;
+}
+
+.add-subtask-btn {
+  flex-shrink: 0;
+}
+
+.subtasks-list {
+  space-y: var(--spacing-md);
+}
+
+.subtask-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  margin-bottom: var(--spacing-md);
+}
+
+.subtask-checkbox {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.subtask-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  opacity: 0;
+  position: absolute;
+  cursor: pointer;
+}
+
+.checkbox-label {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-primary);
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+  margin: 0;
+}
+
+.checkbox-label::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--text-white);
+  font-size: 12px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.subtask-checkbox input[type="checkbox"]:checked + .checkbox-label {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+}
+
+.subtask-checkbox input[type="checkbox"]:checked + .checkbox-label::after {
+  opacity: 1;
+}
+
+.subtask-title-input {
+  flex: 1;
+  border: none;
+  background-color: transparent;
+  padding: var(--spacing-xs) 0;
+  font-size: 0.875rem;
+}
+
+.subtask-title-input:focus {
+  outline: none;
+  border-bottom: 1px solid var(--primary-color);
+}
+
+.subtask-title-input.completed {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.remove-subtask-btn {
+  padding: var(--spacing-xs);
+  border: none;
+  background-color: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  font-size: 1rem;
+}
+
+.remove-subtask-btn:hover {
+  background-color: var(--error-color);
+  color: var(--text-white);
+  transform: scale(1.1);
+}
+
+/* Form Actions */
+.form-actions-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-light);
+}
+
+.form-actions .btn,
+.form-actions-bottom .btn {
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Error States */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus States */
+.form-group:focus-within label {
+  color: var(--primary-color);
+  transform: translateY(-2px);
+  transition: all var(--transition-fast);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .task-form-container {
+    max-width: none;
+    margin: 0;
+  }
+
+  .form-header {
     flex-direction: column;
-    margin-bottom: 1.5rem;
-}
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
 
-label {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #34495e;
-}
+  .task-form {
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+  }
 
-input, textarea, select {
-    padding: 0.6rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    outline: none;
-    transition: 0.2s;
-}
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
 
-input:focus, textarea:focus, select:focus {
-    border-color: #3498db;
-    box-shadow: 0 0 4px rgba(52,152,219,0.3);
-}
+  .subtask-input-row {
+    flex-direction: column;
+  }
 
-textarea {
-    resize: vertical;
-    min-height: 70px;
-}
+  .add-subtask-btn {
+    align-self: stretch;
+  }
 
-button {
+  .form-actions-bottom {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .form-actions-bottom .btn {
     width: 100%;
-    padding: 0.8rem;
-    background-color: #3498db;
-    color: white;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
+    justify-content: center;
+  }
 }
 
-button:disabled {
-    background-color: #95a5a6;
-    cursor: not-allowed;
+@media (max-width: 480px) {
+  .task-form {
+    padding: var(--spacing-md);
+  }
+
+  .form-section {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+  }
+
+  .subtasks-container {
+    padding: var(--spacing-md);
+  }
+
+  .subtask-item {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
 }
 
-button:hover:not(:disabled) {
-    background-color: #2980b9;
+/* Animation for form submission */
+.task-form.submitting {
+  opacity: 0.8;
+  pointer-events: none;
 }
 
-.back-link {
-    display: block;
-    text-align: center;
-    margin-top: 1.5rem;
-    text-decoration: none;
-    color: #3498db;
-    font-weight: 600;
+.task-form.submitting .btn {
+  position: relative;
 }
 
-.back-link:hover {
-    text-decoration: underline;
+.task-form.submitting .btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }

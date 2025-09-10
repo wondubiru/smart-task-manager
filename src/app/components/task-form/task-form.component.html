@@ -1,41 +1,227 @@
-<div class="form-container">
-    <h1>📝 Add New Task</h1>
+<div class="task-form-container">
+  <div class="form-header">
+    <h2>{{ isEditMode ? '✏️ Edit Task' : '📝 Add New Task' }}</h2>
+    <div class="form-actions">
+      <button type="button" (click)="cancel()" class="btn btn-secondary">
+        ❌ Cancel
+      </button>
+    </div>
+  </div>
 
-    <form id="taskForm">
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()" class="task-form">
+    <!-- Basic Information Section -->
+    <div class="form-section">
+      <h3 class="section-title">📋 Basic Information</h3>
+      
+      <div class="form-group">
+        <label for="title">Title *</label>
+        <input 
+          id="title"
+          type="text" 
+          formControlName="title" 
+          placeholder="Enter a descriptive task title"
+          class="form-input"
+          [class.error]="getFieldError('title')" />
+        <div class="error-message" *ngIf="getFieldError('title')">
+          {{ getFieldError('title') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea 
+          id="description"
+          formControlName="description" 
+          placeholder="Provide details about this task..."
+          class="form-textarea"
+          rows="4"></textarea>
+      </div>
+
+      <div class="form-row">
         <div class="form-group">
-            <label for="title">Title</label>
-            <input type="text" id="title" name="title" required placeholder="Enter task title">
+          <label for="dueDate">Due Date *</label>
+          <input 
+            id="dueDate"
+            type="date" 
+            formControlName="dueDate" 
+            class="form-input"
+            [class.error]="getFieldError('dueDate')" />
+          <div class="error-message" *ngIf="getFieldError('dueDate')">
+            {{ getFieldError('dueDate') }}
+          </div>
         </div>
 
         <div class="form-group">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" placeholder="Enter task description"></textarea>
+          <label for="category">Category *</label>
+          <select 
+            id="category"
+            formControlName="category" 
+            class="form-select">
+            <option *ngFor="let option of categoryOptions" [value]="option.value">
+              {{ option.icon }} {{ option.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status and Priority Section -->
+    <div class="form-section">
+      <h3 class="section-title">🎯 Status & Priority</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="priority">Priority *</label>
+          <select 
+            id="priority"
+            formControlName="priority" 
+            class="form-select">
+            <option *ngFor="let option of priorityOptions" [value]="option.value">
+              {{ option.icon }} {{ option.label }}
+            </option>
+          </select>
         </div>
 
         <div class="form-group">
-            <label for="dueDate">Due Date</label>
-            <input type="date" id="dueDate" name="dueDate" required>
+          <label for="status">Status *</label>
+          <select 
+            id="status"
+            formControlName="status" 
+            class="form-select">
+            <option *ngFor="let option of statusOptions" [value]="option.value">
+              {{ option.icon }} {{ option.label }}
+            </option>
+          </select>
         </div>
+      </div>
+    </div>
 
+    <!-- Time Tracking Section -->
+    <div class="form-section">
+      <h3 class="section-title">⏱️ Time Tracking</h3>
+      
+      <div class="form-row">
         <div class="form-group">
-            <label for="priority">Priority</label>
-            <select id="priority" name="priority" required>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-            </select>
+          <label for="estimatedHours">Estimated Hours</label>
+          <input 
+            id="estimatedHours"
+            type="number" 
+            formControlName="estimatedHours" 
+            placeholder="0"
+            min="0.5"
+            max="1000"
+            step="0.5"
+            class="form-input"
+            [class.error]="getFieldError('estimatedHours')" />
+          <div class="error-message" *ngIf="getFieldError('estimatedHours')">
+            {{ getFieldError('estimatedHours') }}
+          </div>
         </div>
 
-        <div class="form-group">
-            <label for="status">Status</label>
-            <select id="status" name="status" required>
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-            </select>
+        <div class="form-group" *ngIf="isEditMode">
+          <label for="actualHours">Actual Hours</label>
+          <input 
+            id="actualHours"
+            type="number" 
+            formControlName="actualHours" 
+            placeholder="0"
+            min="0"
+            max="1000"
+            step="0.5"
+            class="form-input"
+            [class.error]="getFieldError('actualHours')" />
+          <div class="error-message" *ngIf="getFieldError('actualHours')">
+            {{ getFieldError('actualHours') }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tags Section -->
+    <div class="form-section">
+      <h3 class="section-title">🏷️ Tags</h3>
+      
+      <div class="form-group">
+        <label for="tags">Tags (comma separated)</label>
+        <input 
+          id="tags"
+          type="text" 
+          formControlName="tags" 
+          placeholder="work, urgent, meeting, etc."
+          class="form-input" />
+        <div class="help-text">Use commas to separate multiple tags</div>
+      </div>
+    </div>
+
+    <!-- Subtasks Section -->
+    <div class="form-section">
+      <h3 class="section-title">📋 Subtasks</h3>
+      
+      <div class="subtasks-container">
+        <div class="subtask-input-row">
+          <input 
+            type="text" 
+            [(ngModel)]="newSubtaskTitle"
+            [ngModelOptions]="{standalone: true}"
+            (keyup.enter)="addSubtask()"
+            placeholder="Enter subtask title..."
+            class="form-input subtask-input" />
+          <button 
+            type="button" 
+            (click)="addSubtask()"
+            [disabled]="!newSubtaskTitle.trim()"
+            class="btn btn-secondary add-subtask-btn">
+            ➕ Add
+          </button>
         </div>
 
-        <button type="submit">Add Task</button>
-    </form>
+        <div class="subtasks-list" *ngIf="subtasksFormArray.length > 0">
+          <div 
+            class="subtask-item" 
+            *ngFor="let subtask of subtasksFormArray.controls; let i = index"
+            [formGroup]="$any(subtask)">
+            
+            <div class="subtask-checkbox">
+              <input 
+                type="checkbox" 
+                [id]="'subtask-' + i"
+                formControlName="completed"
+                (change)="toggleSubtaskCompletion(i)" />
+              <label [for]="'subtask-' + i" class="checkbox-label"></label>
+            </div>
 
-    <a href="#" class="back-link">← Back to list</a>
+            <input 
+              type="text" 
+              formControlName="title"
+              class="subtask-title-input"
+              [class.completed]="subtask.value.completed" />
+
+            <button 
+              type="button" 
+              (click)="removeSubtask(i)"
+              class="btn btn-danger remove-subtask-btn">
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Section -->
+    <div class="form-actions-bottom">
+      <button 
+        type="button" 
+        (click)="cancel()" 
+        class="btn btn-secondary">
+        ❌ Cancel
+      </button>
+      
+      <button 
+        type="submit" 
+        [disabled]="taskForm.invalid"
+        class="btn btn-primary">
+        {{ isEditMode ? '💾 Update Task' : '➕ Create Task' }}
+      </button>
+    </div>
+  </form>
 </div>

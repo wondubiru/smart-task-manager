@@ -1,0 +1,258 @@
+<div class="analytics-container">
+  <!-- Header -->
+  <div class="analytics-header">
+    <h1>📊 Productivity Analytics</h1>
+    <p class="analytics-subtitle">Insights into your task management and productivity patterns</p>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="loading-spinner">⏳</div>
+    <p>Analyzing your productivity data...</p>
+  </div>
+
+  <!-- Analytics Content -->
+  <div class="analytics-content" *ngIf="!isLoading && metrics">
+    
+    <!-- Key Metrics Cards -->
+    <div class="metrics-grid">
+      <!-- Productivity Score -->
+      <div class="metric-card primary-metric">
+        <div class="metric-header">
+          <h3>🎯 Productivity Score</h3>
+          <div class="metric-trend">+5% this week</div>
+        </div>
+        <div class="metric-value" [style.color]="getProductivityScoreColor()">
+          {{ metrics.productivityScore }}
+          <span class="metric-unit">/ 100</span>
+        </div>
+        <div class="metric-description">
+          Based on completion rate, timeliness, efficiency, and consistency
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="metrics.productivityScore" [style.background-color]="getProductivityScoreColor()"></div>
+        </div>
+      </div>
+
+      <!-- Task Completion -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <h3>✅ Task Completion</h3>
+        </div>
+        <div class="metric-value">{{ metrics.completionRate }}%</div>
+        <div class="metric-description">{{ metrics.completedTasks }} of {{ metrics.totalTasks }} tasks completed</div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="metrics.completionRate"></div>
+        </div>
+      </div>
+
+      <!-- Time Efficiency -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <h3>⚡ Time Efficiency</h3>
+        </div>
+        <div class="metric-value">{{ metrics.timeEfficiency }}%</div>
+        <div class="metric-description">Average time vs estimated time accuracy</div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="metrics.timeEfficiency"></div>
+        </div>
+      </div>
+
+      <!-- Streak Days -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <h3>🔥 Current Streak</h3>
+        </div>
+        <div class="metric-value">{{ metrics.streakDays }}</div>
+        <div class="metric-description">Consecutive days with completed tasks</div>
+      </div>
+
+      <!-- Average Time -->
+      <div class="metric-card">
+        <div class="metric-header">
+          <h3>⏱️ Avg Time/Task</h3>
+        </div>
+        <div class="metric-value">{{ metrics.averageTimePerTask }}</div>
+        <div class="metric-description">Hours per task on average</div>
+      </div>
+
+      <!-- Burnout Risk -->
+      <div class="metric-card" [class.warning]="metrics.burnoutRisk === 'medium'" [class.danger]="metrics.burnoutRisk === 'high'">
+        <div class="metric-header">
+          <h3>🧠 Burnout Risk</h3>
+        </div>
+        <div class="metric-value" [style.color]="getBurnoutRiskColor()">{{ metrics.burnoutRisk | titlecase }}</div>
+        <div class="metric-description">Based on workload and overdue tasks</div>
+      </div>
+    </div>
+
+    <!-- Focus Time Recommendation -->
+    <div class="recommendation-card">
+      <div class="recommendation-header">
+        <h3>💡 AI Productivity Recommendation</h3>
+      </div>
+      <div class="recommendation-content">
+        <p>{{ metrics.focusTimeRecommendation }}</p>
+        <div class="recommendation-stats">
+          <span class="stat-item">
+            <strong>Most Productive:</strong> {{ metrics.mostProductiveHour }}
+          </span>
+          <span class="stat-item">
+            <strong>Overdue Tasks:</strong> {{ metrics.overdueTasks }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-section">
+      
+      <!-- Weekly Progress Chart -->
+      <div class="chart-card">
+        <h3>📈 Weekly Progress</h3>
+        <div class="chart-container">
+          <div class="bar-chart">
+            <div class="bar-item" *ngFor="let day of metrics.weeklyProgress">
+              <div class="bar-group">
+                <div class="bar completed" [style.height.px]="Math.max(day.completed * 10, 5)" title="Completed: {{ day.completed }}"></div>
+                <div class="bar created" [style.height.px]="Math.max(day.created * 8, 3)" title="Created: {{ day.created }}"></div>
+              </div>
+              <span class="bar-label">{{ day.day }}</span>
+            </div>
+          </div>
+          <div class="chart-legend">
+            <span class="legend-item completed">Completed</span>
+            <span class="legend-item created">Created</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Category Breakdown -->
+      <div class="chart-card">
+        <h3>📂 Task Categories</h3>
+        <div class="breakdown-list">
+          <div class="breakdown-item" *ngFor="let category of metrics.categoriesBreakdown">
+            <div class="breakdown-header">
+              <span class="category-name">{{ getCategoryIcon(category.category) }} {{ category.category | titlecase }}</span>
+              <span class="category-percentage">{{ category.percentage }}%</span>
+            </div>
+            <div class="breakdown-bar">
+              <div class="breakdown-fill" [style.width.%]="category.percentage"></div>
+            </div>
+            <span class="breakdown-count">{{ category.count }} tasks</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Priority Distribution -->
+      <div class="chart-card">
+        <h3>🎯 Priority Distribution</h3>
+        <div class="breakdown-list">
+          <div class="breakdown-item" *ngFor="let priority of metrics.priorityBreakdown">
+            <div class="breakdown-header">
+              <span class="priority-name">{{ priority.priority | titlecase }}</span>
+              <span class="priority-percentage">{{ priority.percentage }}%</span>
+            </div>
+            <div class="breakdown-bar">
+              <div class="breakdown-fill" [style.width.%]="priority.percentage" [style.background-color]="getPriorityColor(priority.priority)"></div>
+            </div>
+            <span class="breakdown-count">{{ priority.count }} tasks</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Insights Section -->
+    <div class="insights-section">
+      <h3>🔍 Smart Insights</h3>
+      
+      <div class="insights-grid">
+        <!-- Time Estimation -->
+        <div class="insight-card">
+          <div class="insight-icon">⏰</div>
+          <div class="insight-content">
+            <h4>Time Estimation Accuracy</h4>
+            <div class="insight-value">{{ metrics.estimationAccuracy }}%</div>
+            <p *ngIf="metrics.estimationAccuracy < 70" class="insight-tip">
+              Try breaking down large tasks into smaller, more predictable chunks!
+            </p>
+            <p *ngIf="metrics.estimationAccuracy >= 70" class="insight-tip">
+              Great job! Your time estimates are quite accurate.
+            </p>
+          </div>
+        </div>
+
+        <!-- Peak Hours -->
+        <div class="insight-card">
+          <div class="insight-icon">🌟</div>
+          <div class="insight-content">
+            <h4>Peak Performance</h4>
+            <div class="insight-value">{{ metrics.mostProductiveHour }}</div>
+            <p class="insight-tip">
+              Schedule your most important tasks during this time window for maximum efficiency.
+            </p>
+          </div>
+        </div>
+
+        <!-- Task Balance -->
+        <div class="insight-card">
+          <div class="insight-icon">⚖️</div>
+          <div class="insight-content">
+            <h4>Work-Life Balance</h4>
+            <div class="insight-value">
+              {{ getWorkPercentage() }}% Work
+            </div>
+            <p class="insight-tip" *ngIf="getWorkPercentage() > 70">
+              Consider adding more personal tasks to maintain a healthy balance!
+            </p>
+            <p class="insight-tip" *ngIf="getWorkPercentage() <= 70">
+              Good balance between work and personal tasks!
+            </p>
+          </div>
+        </div>
+
+        <!-- Consistency Score -->
+        <div class="insight-card">
+          <div class="insight-icon">📊</div>
+          <div class="insight-content">
+            <h4>Consistency Score</h4>
+            <div class="insight-value">{{ metrics.streakDays }} days</div>
+            <p class="insight-tip">
+              Consistency is key to building productive habits. Keep up the great work!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Trends -->
+    <div class="trends-section">
+      <h3>📈 Monthly Productivity Trends</h3>
+      <div class="trend-chart">
+        <div class="trend-item" *ngFor="let month of metrics.monthlyTrends">
+          <div class="trend-bar" [style.height.%]="month.productivity" [title]="month.month + ': ' + month.productivity + '%'"></div>
+          <span class="trend-label">{{ month.month }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-analytics" *ngIf="!isLoading && metrics && metrics.totalTasks === 0">
+    <div class="empty-icon">📊</div>
+    <h3>No Analytics Data Yet</h3>
+    <p>Start adding and completing tasks to see your productivity insights!</p>
+    <a routerLink="/add-task" class="btn btn-primary">
+      ➕ Add Your First Task
+    </a>
+  </div>
+
+  <!-- Navigation -->
+  <div class="navigation-section">
+    <a routerLink="/tasks" class="btn btn-secondary">
+      ← Back to Tasks
+    </a>
+  </div>
+</div>

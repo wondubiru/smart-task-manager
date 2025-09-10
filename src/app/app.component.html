@@ -1,0 +1,47 @@
+<!-- Beautiful Smart Task Manager -->
+<div class="app-container">
+  <!-- Modern Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="logo-section">
+        <h1 class="app-title">
+          <span class="app-icon">📋</span>
+          {{ title }}
+        </h1>
+        <p class="app-subtitle">Your intelligent task management solution</p>
+      </div>
+      
+      <nav class="header-nav">
+        <a routerLink="/tasks" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">📝</span>
+          <span>Tasks</span>
+        </a>
+        <a routerLink="/analytics" routerLinkActive="active" class="nav-link">
+          <span class="nav-icon">📊</span>
+          <span>Analytics</span>
+        </a>
+        <a routerLink="/add-task" class="nav-link btn-primary">
+          <span class="nav-icon">➕</span>
+          <span>Add Task</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="app-main">
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+  <!-- Modern Footer -->
+  <footer class="app-footer">
+    <div class="footer-content">
+      <div class="footer-info">
+        <p>&copy; {{ currentYear }} Wondu Biru Tupasha</p>
+        <p class="footer-tagline">Built with Angular & TypeScript ❤️</p>
+      </div>
+    </div>
+  </footer>
+</div>
